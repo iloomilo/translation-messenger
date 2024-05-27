@@ -24,6 +24,15 @@ const pool = new Pool({
   },
 });
 
+// to test database connection to the server
+pool.query("SELECT NOW()", (err, res) => {
+  if (err) {
+    console.error("Error connecting to the database:", err);
+  } else {
+    console.log("Successfully connected to the database:", res.rows[0]);
+  }
+});
+
 // to check the database to make sure they are valid credentials logging in
 app.post("/login", async (req, res) => {
   const { username, password } = req.body;
