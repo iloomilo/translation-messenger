@@ -1,5 +1,6 @@
 <template>
-  <div>
-    <p>test</p>
-  </div>
+<main>
+  
+  <RouterView></RouterView>
+</main>
 </template>
