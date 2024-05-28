@@ -65,6 +65,20 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// to create a user
+app.post("/registeruser", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+    const newUser = await pool.query(
+      "INSERT INTO translatorusers (username, password) VALUES ($1, $2)",
+      [username, password]
+    );
+    res.json(newUser.rows[0]);
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 app.listen(5174, () => {
   console.log("Server is running on port 5174");
 });
