@@ -1,5 +1,11 @@
 <script setup>
 import { ref } from 'vue';
+import { useUserStore } from '../../stores/userStore';
+import { useRouter } from 'vue-router';
+
+const router = useRouter();
+
+const store = useUserStore();
 
 //Reactive values of the input fields, already trimmed
 const username = ref("");
@@ -8,13 +14,43 @@ const password = ref("");
 //Loading state of the button
 const loading = ref(false);
 
+//Errormessage of the database
+const errorMessage = ref("");
+
 //Handle Login
-const handleLogin = () => {
+const handleLogin = async () => {
   loading.value = true;
-  setTimeout(() => {
+  errorMessage.value = false;
+  
+  //Client side input valididations to reduce server load
+  if(username.value.length < 3 || password.value.length < 5) {
     loading.value = false;
-  }, 1500);
-  console.log("Login!");
+    return errorMessage.value = "Invalid username or password";
+  }
+
+  //HTTP request to see if login credentials match
+  const response = await fetch("http://localhost:5174" + "/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username: username.value,
+      password: password.value
+    }),
+  });
+  //Converting received response to JSON format
+  const data = await response.json();
+  //if passwords match
+  if(data.message === "Login Successful") {
+    //log user in and redirect him to the app
+    store.authorizeUser(true);
+    router.push('/');
+  } else {
+    //display an eror
+    errorMessage.value = data.message;
+  }
+  loading.value = false;
 }
 
 </script>
@@ -45,6 +81,10 @@ const handleLogin = () => {
         v-model.trim="password"
         type="password" class="grow" placeholder="Password"/>
       </label>
+      <p class="text-error mt-2 overflow-hidden transition-all" 
+        :class="errorMessage ? 'h-[30px] translate-y-0' : 'h-[0px] -translate-y-6'">
+        {{ errorMessage }}
+        </p>
       
       <label class="mt-2">
         Don't have an account?
