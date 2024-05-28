@@ -5,9 +5,15 @@ import { ref } from 'vue';
 const username = ref("");
 const password = ref("");
 
+//Loading state of the button
+const loading = ref(false);
 
 //Handle Login
 const handleLogin = () => {
+  loading.value = true;
+  setTimeout(() => {
+    loading.value = false;
+  }, 1500);
   console.log("Login!");
 }
 
@@ -28,7 +34,7 @@ const handleLogin = () => {
         v-model.trim="username"
         type="text" class="grow" placeholder="Username" />
       </label>
-
+      
       <label class="label">
         <span class="label-text">Password</span>
       </label>
@@ -47,7 +53,32 @@ const handleLogin = () => {
     </div>
     
     <div class="form-control mt-6">
-      <button class="btn btn-primary">Login</button>
+      <button class="btn btn-primary flex overflow-hidden" :class="{'btn-disabled': loading}">
+        <Transition>
+          <span v-if="loading" class="loading loading-spinner loading-sm opacity-50"></span>
+        </Transition>
+        <p class="grow-0 transition-all">Login</p>
+      </button>
     </div>   
   </form>
 </template>
+
+<style scoped> 
+
+button > span ~ p {
+  transform: translateX(5px);
+}
+
+
+.v-enter-active,
+.v-leave-active {
+  transition: all 0.1s ease;
+}
+
+.v-enter-from,
+.v-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+</style>
