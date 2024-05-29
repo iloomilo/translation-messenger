@@ -49,10 +49,8 @@ const handleRegister = () => {
         v-model.trim="username"
         type="text" class="grow" placeholder="Username" />
       </label> 
-      <Transition>
         <p :class="!validateUsername && username ? 'h-[20px] translate-y-0' : 'h-[0px] -translate-y-6'" 
         class="text-error mt-2 overflow-hidden transition-all">Username has to be at least 3 characters!</p>
-      </Transition>
     </div>
     
     <div class="form-control">
@@ -68,10 +66,10 @@ const handleRegister = () => {
         v-model.trim="password"
         type="password" class="grow" placeholder="Password"/>
       </label>
-      <Transition>
-        <p class="text-error mt-2 overflow-hidden transition-all" :class="!validatePassword && password ? 'h-[50px] translate-y-0' : 'h-[0px] -translate-y-6'">Password has to include be at least 8 characters, special character and  a number!</p>
-      </Transition>
-      
+        <p class="text-error mt-2 overflow-hidden transition-all" 
+        :class="!validatePassword && password ? 'h-[50px] translate-y-0' : 'h-[0px] -translate-y-6'">
+        Password has to include be at least 8 characters, special character and  a number!
+        </p>
       <label class="label">
         <span class="label-text">Confirm Password</span>
       </label>
@@ -87,7 +85,9 @@ const handleRegister = () => {
       <Transition>
         <p  
         :class="!validateConfirmPassword && confirmPassword ? 'h-[20px] translate-y-0' : 'h-[0px] -translate-y-6'"
-        class="text-error mt-2 overflow-hidden transition-all">Passwords don't match!</p>
+        class="text-error mt-2 overflow-hidden transition-all">
+        Passwords don't match!
+        </p>
       </Transition>
       
       <label class="mt-2">

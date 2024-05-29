@@ -5,5 +5,9 @@ export const useUserStore = defineStore('userStore', () => {
     
     const user = ref(null);
   
-    return { user }
+    const authorizeUser = (loggedInUser) => {
+      user.value = loggedInUser;
+    }
+
+    return { user, authorizeUser }
   });
