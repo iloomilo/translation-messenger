@@ -1,12 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const bcrypt = require("bcrypt");
 require("dotenv").config();
 
 //middleware
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
 
 // to connect the database to this backend
 const { SQL_USER, SQL_PASS, SQL_HOST, SQL_PORT, SQL_DATABASE } = process.env;
@@ -69,9 +73,25 @@ app.post("/login", async (req, res) => {
 app.post("/registeruser", async (req, res) => {
   try {
     const { username, password } = req.body;
+
+    // check password format first
+    if (!passwordRegex.test(password)) {
+      return res.status(400).json({
+        error:
+          "Password must contain at least 8 characters, including uppercase, lowercase, number, and special character.",
+      });
+    }
+
+    // generate a salt
+    const salt = await bcrypt.genSalt(10);
+
+    // hash the password
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    // store the username and hashed password in the database
     const newUser = await pool.query(
       "INSERT INTO translatorusers (username, password) VALUES ($1, $2)",
-      [username, password]
+      [username, hashedPassword]
     );
     res.json(newUser.rows[0]);
   } catch (err) {
