@@ -1,5 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
+import { globalConfig } from '../../config.js';
 
 // Recatives values of input fields, already trimmed
 const username = ref("");
@@ -26,10 +27,27 @@ const validateConfirmPassword = computed(() => {
 });
 
 //Authentication handling
-const handleRegister = () => {
+const handleRegister = async () => {
   if(validateUsername.value && validatePassword.value && validateConfirmPassword.value) {
     loading.value = true;
-    console.log("Register");
+    //Try to register the user
+    const response = await fetch( globalConfig.API_URL + "/registeruser", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      username: username.value,
+      password: password.value
+    }),
+  });
+
+  console.log(response);
+  //Converting received response to JSON format
+  const data = await response.json();
+  console.log(data);
+  
+  loading.value = false;
   }
 }
 </script>
