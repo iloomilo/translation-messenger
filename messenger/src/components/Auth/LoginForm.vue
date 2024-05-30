@@ -2,6 +2,7 @@
 import { ref } from 'vue';
 import { useUserStore } from '../../stores/userStore';
 import { useRouter } from 'vue-router';
+import { globalConfig } from '../../config.js';
 
 const router = useRouter();
 
@@ -29,7 +30,7 @@ const handleLogin = async () => {
   }
 
   //HTTP request to see if login credentials match
-  const response = await fetch("http://localhost:5174" + "/login", {
+  const response = await fetch(globalConfig.API_URL + "/login", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
