@@ -1,6 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 const { Pool } = require("pg");
+const { Server } = require("socket.io");
+const http = require("http");
 const bcrypt = require("bcrypt");
 require("dotenv").config();
 
@@ -8,6 +10,8 @@ require("dotenv").config();
 const app = express();
 app.use(cors());
 app.use(express.json());
+// server needed for Socket.io
+const server = http.createServer(app);
 
 const passwordRegex =
   /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
@@ -56,8 +60,9 @@ app.post("/login", async (req, res) => {
 
     const user = result.rows[0];
 
-    if (password !== user.password) {
-      console.log("Invalid password");
+    const isPasswordValid = await bcrypt.compare(password, user.password);
+    if (!isPasswordValid) {
+      console.log("Invalid Password");
       return res.status(401).json({ message: "Invalid username or password" });
     }
 
@@ -106,11 +111,16 @@ app.post("/registeruser", async (req, res) => {
       [username, hashedPassword]
     );
     res.json(newUser.rows[0]);
+    return res
+      .status(200)
+      .json({ loginOK: true, message: "User successfully created" });
   } catch (err) {
     console.error(err);
   }
 });
 
-app.listen(5174, () => {
+// Socket.io connection between frontend and backend
+
+server.listen(5174, () => {
   console.log("Server is running on port 5174");
 });
