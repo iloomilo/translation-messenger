@@ -74,7 +74,19 @@ app.post("/registeruser", async (req, res) => {
   try {
     const { username, password } = req.body;
 
-    // check password format first
+    // check if username already exists
+    const userCheck = await pool.query(
+      "SELECT username FROM translatorusers WHERE username = $1",
+      [username]
+    );
+
+    if (userCheck.rows.length > 0) {
+      return res.status(400).json({
+        error: "Username already exists",
+      });
+    }
+
+    // check password format
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
         error:
