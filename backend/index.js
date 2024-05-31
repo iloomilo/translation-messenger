@@ -123,17 +123,15 @@ app.post("/registeruser", async (req, res) => {
       "INSERT INTO translatorusers (username, password) VALUES ($1, $2)",
       [username, hashedPassword]
     );
-    return res
-      .status(200)
-      .json({
-        ok: true, 
-        user: newUser.rows[0],
-        message: "User successfully created" ,
-        userInfo: {
-          username: username,
-          pictureUrl: "https://img.jpg",
-        },
-      });
+    return res.status(200).json({
+      ok: true,
+      user: newUser.rows[0],
+      message: "User successfully created",
+      userInfo: {
+        username: username,
+        pictureUrl: "https://img.jpg",
+      },
+    });
   } catch (err) {
     console.error(err);
   }
@@ -152,6 +150,10 @@ io.on("connection", (socket) => {
 
   socket.on("chat_message", (msg) => {
     io.emit("chat_message", msg);
+    pool.query("INSERT INTO savedmessages (author, message) VALUES ($1, $2)", [
+      msg.author,
+      msg.message,
+    ]);
   });
 });
 
