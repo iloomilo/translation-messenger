@@ -12,7 +12,6 @@ import Input from '../components/Chat/Main/Input.vue';
             <MessageArea />
             <Input />
         </div> 
-
         <Sidebar />
     </main>
 </template>

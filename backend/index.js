@@ -123,10 +123,17 @@ app.post("/registeruser", async (req, res) => {
       "INSERT INTO translatorusers (username, password) VALUES ($1, $2)",
       [username, hashedPassword]
     );
-    res.json(newUser.rows[0]);
     return res
       .status(200)
-      .json({ ok: true, message: "User successfully created" });
+      .json({
+        ok: true, 
+        user: newUser.rows[0],
+        message: "User successfully created" ,
+        userInfo: {
+          username: username,
+          pictureUrl: "https://img.jpg",
+        },
+      });
   } catch (err) {
     console.error(err);
   }
