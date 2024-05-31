@@ -43,9 +43,9 @@ const handleLogin = async () => {
   //Converting received response to JSON format
   const data = await response.json();
   //if passwords match
-  if(data.message === "Login Successful") {
+  if(data.ok) {
     //log user in and redirect him to the app
-    store.authorizeUser(true);
+    store.authorizeUser(data.userInfo);
     router.push('/');
   } else {
     //display an eror

@@ -42,10 +42,15 @@ const handleRegister = async () => {
     }),
   });
 
-  console.log(response);
   //Converting received response to JSON format
   const data = await response.json();
-  console.log(data);
+
+  if(data.ok) {
+    console.log("success");
+  } else {
+    //display error
+    console.log("error");
+  }
   
   loading.value = false;
   }
