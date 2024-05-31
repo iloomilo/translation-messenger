@@ -55,7 +55,9 @@ app.post("/login", async (req, res) => {
 
     if (result.rows.length === 0) {
       console.log("User not found");
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ ok: false, message: "Invalid username or password" });
     }
 
     const user = result.rows[0];
@@ -63,14 +65,23 @@ app.post("/login", async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       console.log("Invalid Password");
-      return res.status(401).json({ message: "Invalid username or password" });
+      return res
+        .status(401)
+        .json({ ok: false, message: "Invalid username or password" });
     }
 
     console.log("Login successful for user:", username);
-    return res.status(200).json({ message: "Login Successful" });
+    return res.status(200).json({
+      ok: true,
+      message: "Login Successful",
+      userInfo: {
+        username: username,
+        pictureUrl: "https://img.jpg",
+      },
+    });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Internal Server Error" });
+    res.status(500).json({ ok: false, message: "Internal Server Error" });
   }
 });
 
@@ -87,6 +98,7 @@ app.post("/registeruser", async (req, res) => {
 
     if (userCheck.rows.length > 0) {
       return res.status(400).json({
+        ok: false,
         error: "Username already exists",
       });
     }
@@ -94,6 +106,7 @@ app.post("/registeruser", async (req, res) => {
     // check password format
     if (!passwordRegex.test(password)) {
       return res.status(400).json({
+        ok: false,
         error:
           "Password must contain at least 8 characters, including uppercase, lowercase, number, and special character.",
       });
@@ -113,7 +126,7 @@ app.post("/registeruser", async (req, res) => {
     res.json(newUser.rows[0]);
     return res
       .status(200)
-      .json({ loginOK: true, message: "User successfully created" });
+      .json({ ok: true, message: "User successfully created" });
   } catch (err) {
     console.error(err);
   }
