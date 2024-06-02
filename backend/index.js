@@ -137,6 +137,60 @@ app.post("/registeruser", async (req, res) => {
   }
 });
 
+// to search for a friend from the database
+app.get("/searchusers", async (req, res) => {
+  try {
+    const query = req.query;
+
+    if (!query) {
+      return res.status(400).json({
+        ok: false,
+        error: "Search query is required.",
+      });
+    }
+
+    const users = await pool.query(
+      "SELECT username FROM translatorusers WHERE username ILIKE $1",
+      [`%${query}%`]
+    );
+
+    return res.status(200).json({
+      ok: true,
+      users: users.rows,
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(500).json({
+      ok: false,
+      error: "Internal server error",
+    });
+  }
+});
+
+// to add the friend request to the database
+app.post("/friendrequest", async (req, res) => {
+  try {
+    const { from, to, accepted } = req.body;
+
+    const friendRequest = await pool.query(
+      "INSERT INTO friendrequests (recipient, sender, accepted) VALUES ($1, $2, $3)",
+      [from, to, accepted]
+    );
+    return res.status(200).json({
+      ok: true,
+      user: friendRequest.rows[0],
+      message: "User successfully created",
+      friendRequestInfo: {
+        from: sender,
+        to: recipient,
+        accepted: accepted,
+      },
+    });
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 // Socket.io connection between frontend and backend
 const io = new Server(server, {
   cors: {
